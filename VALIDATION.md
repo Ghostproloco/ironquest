@@ -15,3 +15,10 @@
 - Navegador: pantalla de acceso revisada, navegación a registro y recuperación, vuelta al modo invitado con progreso conservado.
 - La autenticación real, envío de correos y persistencia de sesión con Firebase no se han probado: falta conectar/configurar el proyecto del propietario.
 - No incluye sincronización del progreso entre dispositivos.
+
+## Activación Firebase
+
+- Proyecto `ironquest-f628e` creado con autorización del propietario, en plan Spark.
+- Proveedores Google y Email/Password confirmados como habilitados; dominio de GitHub Pages confirmado en dominios autorizados.
+- SDK real inicializado en navegador: los controles pasan de conectando a disponibles, sin error de autenticación.
+- Aún no se ha completado un inicio de sesión con una cuenta real ni probado la entrega de correos. Las pruebas de proveedor siguen usando simulación exclusivamente en tests.

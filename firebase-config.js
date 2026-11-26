@@ -1,5 +1,9 @@
-// Paste ONLY the public Firebase web config returned for this project.
-// Google and Email/Password providers must be enabled, and ghostproloco.github.io
-// must be added under Authentication > Settings > Authorized domains.
-// Do not paste OAuth client secrets or service-account private keys.
-export const firebaseConfig = null;
+// Public Firebase web configuration. Contains no service-account credentials.
+export const firebaseConfig = {
+  apiKey: 'AIzaSyCGUzcY9pamu39RXj8lpcizhZK61NqnVXs',
+  authDomain: 'ironquest-f628e.firebaseapp.com',
+  projectId: 'ironquest-f628e',
+  storageBucket: 'ironquest-f628e.firebasestorage.app',
+  messagingSenderId: '1065399530082',
+  appId: '1:1065399530082:web:e1c489957cf0712b42173b'
+};

@@ -2,7 +2,16 @@
 
 Esta implementación utiliza Firebase Authentication para Google y correo/contraseña, verificación de correo, recuperación y cierre de sesión. El progreso sigue siendo local, aislado por UID; no se ha implementado Firestore ni sincronización en la nube.
 
-## Preparación en Firebase
+## Estado configurado
+
+- Proyecto: `ironquest-f628e`, plan Spark sin facturación añadida.
+- App web: IRONQUEST Web.
+- Google y Email/Password: habilitados.
+- Dominio de producción: `ghostproloco.github.io`.
+- Configuración web pública añadida a `firebase-config.js`.
+- SDK inicializado en navegador con el servicio real; pendiente validar un acceso completo con una cuenta elegida por el usuario y los correos reales.
+
+## Referencia de configuración
 
 1. Crear o seleccionar un proyecto propio y registrar una app web IRONQUEST.
 2. Activar Authentication y los proveedores Google y Email/Password. Elegir el correo de soporte del propietario para Google.

@@ -36,16 +36,16 @@ Abrir `http://localhost:4173`. Las fuentes de Google son opcionales: si no hay c
 
 ## Datos y alcance
 
-Esta versión guarda datos únicamente en `localStorage` del navegador; no incluye cuentas, servidor ni sincronización. Los registros y rangos pueden editarse localmente y no son aptos para competiciones verificadas. Los datos no se envían a un backend. La carga opcional de fuentes realiza una solicitud a Google Fonts. Las copias JSON incluyen los registros que el usuario haya guardado y se deben custodiar como datos personales.
+Los entrenamientos, pesos y hábitos se guardan en `localStorage` del navegador, separados por cuenta. Firebase Authentication gestiona las cuentas; todavía no hay sincronización del progreso. Los registros y rangos pueden editarse localmente y no son aptos para competiciones verificadas. El historial de entrenamiento, peso y hábitos no se envía a un backend. Al acceder con cuenta, Firebase y el proveedor elegido procesan los datos necesarios para autenticarte. La carga opcional de fuentes realiza una solicitud a Google Fonts. Las copias JSON incluyen los registros que el usuario haya guardado y se deben custodiar como datos personales.
 
 Las rutinas son plantillas generales, no asesoramiento médico ni planes clínicos. El objetivo cambia el enfoque y los descansos; no hay cálculo de calorías, dieta, progresión automática de cargas ni garantías de resultados. La app no solicita permisos de cámara, ubicación, contactos ni sensores.
 
 ## Estado
 
-Código inicial del repositorio privado `Ghostproloco/ironquest`. Consulta `ROADMAP.md` para las siguientes fases. No es todavía una aplicación nativa ni un producto listo para publicar en las tiendas.
+Código del repositorio público `Ghostproloco/ironquest`. Consulta `ROADMAP.md` para las siguientes fases. No es todavía una aplicación nativa ni un producto listo para publicar en las tiendas.
 
-## Acceso con cuenta (en preparación)
+## Acceso con cuenta
 
-La rama de cuentas incorpora pantalla de Google/correo, registro, verificación, recuperación y cierre de sesión. Requiere configurar un proyecto Firebase antes de activar el acceso real. Sin configuración, el modo invitado sigue operativo y los botones de proveedor se muestran como pendientes. Consulta `AUTH_SETUP.md`.
+La app incorpora Google/correo, registro, verificación, recuperación y cierre de sesión. Está conectada al proyecto Firebase `ironquest-f628e`, con los proveedores Google y Email/Password habilitados y `ghostproloco.github.io` autorizado. El proyecto usa el plan Spark. Consulta `AUTH_SETUP.md`.
 
 El progreso de cada cuenta continúa guardándose localmente, separado del invitado y de otras cuentas. Iniciar sesión no activa sincronización en la nube. La implementación no escribe contraseñas ni tokens en el almacenamiento gestionado por la app.
