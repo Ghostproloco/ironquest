@@ -43,3 +43,9 @@ Las rutinas son plantillas generales, no asesoramiento médico ni planes clínic
 ## Estado
 
 Código inicial del repositorio privado `Ghostproloco/ironquest`. Consulta `ROADMAP.md` para las siguientes fases. No es todavía una aplicación nativa ni un producto listo para publicar en las tiendas.
+
+## Acceso con cuenta (en preparación)
+
+La rama de cuentas incorpora pantalla de Google/correo, registro, verificación, recuperación y cierre de sesión. Requiere configurar un proyecto Firebase antes de activar el acceso real. Sin configuración, el modo invitado sigue operativo y los botones de proveedor se muestran como pendientes. Consulta `AUTH_SETUP.md`.
+
+El progreso de cada cuenta continúa guardándose localmente, separado del invitado y de otras cuentas. Iniciar sesión no activa sincronización en la nube. La implementación no escribe contraseñas ni tokens en el almacenamiento gestionado por la app.

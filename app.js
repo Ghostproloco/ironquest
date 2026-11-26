@@ -1,7 +1,9 @@
+import {accountHeader,accountCard,accountPage,initAccounts} from './account.js';
+import {userStorageKey} from './src/auth-client.js';
 import {RANKS,GOALS,defaultState,dayKey,makePlan,totalXP,rankInfo,sessionXP,weekCount,streak,finishSession,validateImport} from './src/core.js';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const key='ironquest.state.v1';let state=defaultState(),storageProblem=false;
+let key=userStorageKey(null),currentUID=null;let state=defaultState(),storageProblem=false;
 try{const raw=localStorage.getItem(key);if(raw){const stored=JSON.parse(raw);state={...validateImport(stored),draft:stored.draft?.entries?.length?stored.draft:null};}}catch{storageProblem=true;}
 let route=location.hash.slice(1)||'home',timerEnd=0,timerInterval;
 const icons={home:'◈',plan:'▤',ranks:'✦',progress:'◴',profile:'◎'};
@@ -12,10 +14,11 @@ function button(text,action,kind='primary',extra=''){return `<button class="btn 
 function shield(rank,size=''){return `<div class="shield ${size}" style="--rank:${rank.color}"><svg viewBox="0 0 120 140" aria-hidden="true"><path d="M60 8 107 28v48c0 25-30 47-47 57C43 123 13 101 13 76V28Z" fill="none" stroke="currentColor" stroke-width="3"/><path d="m60 24 32 14v35c0 16-18 34-32 43-14-9-32-27-32-43V38Z" fill="currentColor" opacity=".12"/><path d="m60 40 7 21 22 1-18 13 6 22-17-13-18 13 7-22-18-13 22-1Z" fill="currentColor"/></svg></div>`;}
 function heading(eyebrow,title,desc,action=''){return `<div class="page-heading"><div><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${desc}</p></div>${action}</div>`;}
 function render(){
- if(!Object.hasOwn(names,route))route='home';
+ if(!Object.hasOwn(names,route)&&route!=='account')route='home';
+ $('#account-header').innerHTML=accountHeader();
  $('#nav').innerHTML=Object.entries(names).map(([id,name])=>`<a href="#${id}" class="${route===id?'active':''}" ${route===id?'aria-current="page"':''}><span>${icons[id]}</span><span>${name}</span>${id==='ranks'?'<i>XP</i>':''}</a>`).join('');
  $('.avatar').textContent=state.profile.alias.charAt(0).toUpperCase()||'A';
- $('#main').innerHTML=({home:home,plan:plan,ranks:ranks,progress:progress,profile:profile}[route])();
+ $('#main').innerHTML=({home:home,plan:plan,ranks:ranks,progress:progress,profile:profile,account:accountPage}[route])();
  if(state.draft&&route==='plan')renderSession();
 }
 function home(){
@@ -41,7 +44,7 @@ function progress(){const totalVolume=state.history.reduce((n,s)=>n+s.volume,0);
  <article class="card history-card"><div class="card-title"><h2>Historial de entrenamiento</h2><span class="tag">${state.history.length} SESIONES</span></div>${state.history.length?`<div class="table-scroll"><table><thead><tr><th>Sesión</th><th>Fecha</th><th>Series</th><th>Volumen</th><th>Experiencia</th></tr></thead><tbody>${state.history.slice().reverse().map(s=>`<tr><td>${esc(s.name)}</td><td>${new Date(s.endedAt).toLocaleDateString('es-ES')}</td><td>${s.sets}</td><td>${Math.round(s.volume)} kg</td><td class="lime">+${s.xp} XP</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><span>▤</span><h3>Tu historia empieza con una sesión</h3><p>Cuando completes tu primer entrenamiento, aparecerá aquí.</p><a class="btn secondary" href="#plan">Explorar mi plan</a></div>'}</article>`;}
 function activityChart(){const start=new Date();start.setHours(0,0,0,0);start.setDate(start.getDate()-((start.getDay()+6)%7)-35);const data=Array.from({length:6},(_,i)=>{const a=new Date(start);a.setDate(a.getDate()+i*7);return {date:a,n:weekCount(state.history,a)};});const max=Math.max(3,...data.map(x=>x.n));return `<div class="bar-chart" role="img" aria-label="Sesiones por semana: ${data.map(d=>d.n).join(', ')}">${data.map(d=>`<div class="bar-column"><b>${d.n}</b><div class="bar-space"><div style="height:${Math.max(2,d.n/max*100)}%" class="${d.n?'filled':''}"></div></div><small>${d.date.toLocaleDateString('es-ES',{day:'numeric',month:'short'})}</small></div>`).join('')}</div>`;}
 function profile(){const p=state.profile;return heading('DISEÑA TU CAMINO','Un plan que encaje contigo.','Puedes cambiar tus preferencias cuando quieras.')+`
- <form id="profile-form" class="card profile-form"><div class="form-heading"><span class="form-icon">◎</span><div><h2>Tu punto de partida</h2><p>Empezamos con lo que tienes, desde donde estás.</p></div></div>
+ ${accountCard()}<form id="profile-form" class="card profile-form"><div class="form-heading"><span class="form-icon">◎</span><div><h2>Tu punto de partida</h2><p>Empezamos con lo que tienes, desde donde estás.</p></div></div>
  <label>Tu alias<input name="alias" maxlength="24" value="${esc(p.alias)}" required autocomplete="nickname"></label>
  <fieldset><legend>¿Qué quieres conseguir?</legend><div class="goal-options">${Object.entries(GOALS).map(([id,name])=>`<label class="choice"><input type="radio" name="goal" value="${id}" ${p.goal===id?'checked':''}><span><b>${{muscle:'▥',strength:'ϟ',fitness:'◈',fatloss:'◎'}[id]}</b>${name}</span></label>`).join('')}</div></fieldset>
  <div class="form-grid"><label>¿Dónde entrenas?<select name="equipment"><option value="gym" ${p.equipment==='gym'?'selected':''}>Gimnasio completo</option><option value="dumbbell" ${p.equipment==='dumbbell'?'selected':''}>En casa · mancuernas</option><option value="bodyweight" ${p.equipment==='bodyweight'?'selected':''}>En casa · sin material</option></select></label><label>Tu experiencia<select name="level"><option value="beginner" ${p.level==='beginner'?'selected':''}>Estoy empezando</option><option value="intermediate" ${p.level==='intermediate'?'selected':''}>Ya tengo experiencia</option></select></label><label>Días por semana<select name="days">${[2,3,4,5].map(n=>`<option ${p.days===n?'selected':''} value="${n}">${n} días</option>`).join('')}</select></label><label>Tiempo por sesión<select name="minutes">${[25,40,60].map(n=>`<option ${p.minutes===n?'selected':''} value="${n}">${n} minutos aprox.</option>`).join('')}</select></label></div><p class="form-note">Rutinas generales de fuerza. Los objetivos orientan la experiencia; esta versión no calcula dietas, calorías ni plazos para cambiar tu cuerpo.</p><button class="btn primary" type="submit">Guardar y crear mi plan</button></form>
@@ -80,5 +83,11 @@ document.addEventListener('submit',e=>{
 });
 let pendingImport;
 document.addEventListener('change',async e=>{if(e.target.id!=='import-file')return;try{const file=e.target.files[0];if(!file)return;if(file.size>5000000)throw Error('La copia es demasiado grande (máximo 5 MB).');pendingImport=validateImport(JSON.parse(await file.text()));openModal(`<h2>¿Restaurar esta copia?</h2><p>Reemplazará los datos actuales por ${pendingImport.history.length} sesiones y ${pendingImport.weights.length} registros de peso. Puedes exportar tu progreso actual antes de continuar.</p><div class="button-row">${button('Restaurar copia','confirm-import')}${button('Cancelar','close','ghost')}</div>`);}catch(error){toast(error.message||'No se puede importar este archivo.');}e.target.value='';});
+initAccounts({render:()=>render(),onIdentity:user=>{
+ const uid=user?.uid||null;if(uid===currentUID)return;
+ save();currentUID=uid;key=userStorageKey(uid);state=defaultState();
+ try{const raw=localStorage.getItem(key);if(raw){const stored=JSON.parse(raw);state={...validateImport(stored),draft:stored.draft?.entries?.length?stored.draft:null};}}catch{toast('No se ha podido recuperar el progreso de esta cuenta. Revisa tu copia exportada.');}
+ timerEnd=0;clearInterval(timerInterval);if($('#modal').open)closeModal();
+}});
 render();if(storageProblem)toast('No se ha podido recuperar el progreso guardado. Revisa tu copia exportada.');
 if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
