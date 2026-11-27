@@ -1,5 +1,5 @@
 {
-  "name": "ironquest", "version": "0.2.0", "private": true, "type": "module",
+  "name": "ironquest", "version": "0.2.1", "private": true, "type": "module",
   "description": "Entrena, registra tu progreso y sube de rango.",
   "scripts": {"test": "node --test", "build": "node scripts/build.mjs", "start": "node scripts/serve.mjs"},
   "engines": {"node": ">=20"}
